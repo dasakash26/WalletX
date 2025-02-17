@@ -1,31 +1,40 @@
 import { Routes, Route } from "react-router";
 import "./App.css";
-import WalletSetupPage from "./pages/WalletSetUpPage";
 import { Layout } from "./Layout";
 import { CreateWalletPage } from "./pages/CreateWalletPage";
+import AuthPage from "./pages/AuthPage";
+import { WalletProvider } from "@/context/WalletProvider";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+// import HomePage from "./pages/HomePage";
+// import ImportWalletPage from "./pages/ImportWalletPage";
+// import SendPage from "./pages/SendPage";
+// import ReceivePage from "./pages/ReceivePage";
+// import SettingsPage from "./pages/SettingsPage";
+// import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
-    <>
+    <WalletProvider>
       <Routes>
-        <Route path="/wallet-setup" element={<WalletSetupPage />} />
-        <Route path="/create-wallet" element={<CreateWalletPage />} />
         <Route element={<Layout />}>
-          {/* <Route
+          <Route path="/auth" element={<AuthPage />} />
+          <Route path="/create-wallet" element={<CreateWalletPage />} />
+          {/* <Route path="/import-wallet" element={<ImportWalletPage />} /> */}
+          <Route
             path="/"
             element={
               <ProtectedRoute>
-                <HomePage />
+                <div>Home</div>
+                {/* <HomePage /> */}
               </ProtectedRoute>
             }
           />
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="/import-wallet" element={<ImportWalletPage />} />
           <Route
             path="/send"
             element={
               <ProtectedRoute>
-                <SendPage />
+                <div>Send</div>
+                {/* <SendPage /> */}
               </ProtectedRoute>
             }
           />
@@ -33,7 +42,8 @@ function App() {
             path="/receive"
             element={
               <ProtectedRoute>
-                <ReceivePage />
+                <div>Receive</div>
+                {/* <ReceivePage /> */}
               </ProtectedRoute>
             }
           />
@@ -41,13 +51,16 @@ function App() {
             path="/settings"
             element={
               <ProtectedRoute>
-                <SettingsPage />
+                <div>Settings</div>
+                {/*
+                  <SettingsPage />
+                  */}
               </ProtectedRoute>
             }
-          /> */}
+          />
         </Route>
       </Routes>
-    </>
+    </WalletProvider>
   );
 }
 

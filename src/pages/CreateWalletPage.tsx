@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { generateMnemonic } from "@scure/bip39";
-import { wordlist } from "@scure/bip39/wordlists/english";
 import { Loader2, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -9,7 +7,7 @@ import { PasswordSetup } from "@/components/create-wallet/PasswordSetup";
 import { SuccessMessage } from "@/components/create-wallet/SuccessMessage";
 import type { StepStatus, WalletStep } from "@/types";
 import { SecretPhrase } from "@/components/SecretPhrase";
-
+import { generateMnemonic } from "../utils/wallet";
 const WALLET_STEPS = {
   GENERATE: {
     number: 1,
@@ -59,10 +57,7 @@ export function CreateWalletPage() {
     setIsLoading(true);
     setError(null);
     try {
-      if (!wordlist) {
-        throw new Error("Wordlist not available");
-      }
-      const phrase = generateMnemonic(wordlist);
+      const phrase = generateMnemonic();
       setMnemonic(phrase);
     } catch (err) {
       const errorMessage =
@@ -153,7 +148,7 @@ export function CreateWalletPage() {
   const { title, description } = getStepHeading();
 
   return (
-    <div className="container max-w-2xl mx-auto p-6 my-3 space-y-8">
+    <div className="container max-w-2xl mx-auto p-5 space-y-8">
       <div className="space-y-2 text-center">
         <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
         <p className="text-muted-foreground max-w-md mx-auto">{description}</p>

@@ -1,27 +1,29 @@
-import React, { createContext, useState, useContext } from "react";
-import { Keypair } from "@solana/web3.js";
+import { createContext, useContext, useState, ReactNode } from "react";
+import { SolanaWallet, OtherWallet } from "@/types/wallet";
+
+type Wallet = SolanaWallet | OtherWallet | null;
 
 interface WalletContextType {
-  wallet: Keypair | null;
-  setWallet: (wallet: Keypair | null) => void;
+  wallet: Wallet;
+  setWallet: (wallet: Wallet) => void;
 }
 
-export const WalletContext = createContext<WalletContextType | null>(null);
+const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
-export function useWallet() {
-  const context = useContext(WalletContext);
-  if (!context) {
-    throw new Error("useWallet must be used within a WalletProvider");
-  }
-  return context;
-}
-
-export function WalletProvider({ children }: { children: React.ReactNode }) {
-  const [wallet, setWallet] = useState<Keypair | null>(null);
+export function WalletProvider({ children }: { children: ReactNode }) {
+  const [wallet, setWallet] = useState<Wallet>(null);
 
   return (
     <WalletContext.Provider value={{ wallet, setWallet }}>
       {children}
     </WalletContext.Provider>
   );
+}
+
+export function useWallet() {
+  const context = useContext(WalletContext);
+  if (context === undefined) {
+    throw new Error("useWallet must be used within a WalletProvider");
+  }
+  return context;
 }
