@@ -14,11 +14,14 @@ export function validateAndGetSeed(mnemonic: string): Uint8Array {
 export function deriveSolanaKey(mnemonic: string) {
   try {
     const seed = validateAndGetSeed(mnemonic);
-    console.log(seed);
-    //@ts-ignore
-    const derivedSeed = derivePath(`m/44'/501'/0'/0'`, seed).key;
-    console.log(derivedSeed);
+    console.log("> seed:", seed);
+    const derivedSeed = derivePath(
+      `m/44'/501'/0'/0'`,
+      Buffer.from(seed).toString("hex")
+    ).key;
+    console.log("> derived seed:", derivedSeed);
     const keypair = Keypair.fromSeed(derivedSeed.slice(0, 32));
+    console.log("> keypair:", keypair);
     return {
       address: keypair.publicKey.toString(),
       privateKey: Buffer.from(keypair.secretKey).toString("hex"),

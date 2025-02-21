@@ -148,8 +148,8 @@ export function PasswordSetup({ onConfirm, mnemonic }: PasswordSetupProps) {
       return;
     }
 
-    if (formState.password.length < 8) {
-      setError("Password must be at least 8 characters");
+    if (formState.password.length < 1) {
+      setError("Password must be at least 1 characters");
       return;
     }
 

@@ -16,3 +16,8 @@ export interface OtherWallet extends BaseWallet {
 }
 
 export type Wallet = SolanaWallet | OtherWallet;
+
+export interface WalletContextType {
+  wallet: Wallet;
+  setWallet: (wallet: Wallet) => void;
+}

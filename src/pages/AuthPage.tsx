@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { walletDB } from "@/utils/storage";
 import LoginForm from "../components/LoginForm";
-import { useWallet } from "@/context/WalletProvider";
+import { useWallet } from "@/context/wallet.context";
 
 export default function AuthPage() {
   const wallet = useWallet();

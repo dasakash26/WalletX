@@ -29,7 +29,7 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
 import { motion } from "framer-motion";
-import { useWallet } from "@/context/WalletProvider";
+import { useWallet } from "@/context/wallet.context";
 
 export default function LoginForm() {
   const [password, setPassword] = useState("");
@@ -39,7 +39,7 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { setWallet } = useWallet(); // Add this line
+  const { setWallet } = useWallet();
 
   const handleLogin = async (e?: React.FormEvent) => {
     e?.preventDefault();
