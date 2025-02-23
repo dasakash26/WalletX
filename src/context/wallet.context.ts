@@ -4,11 +4,15 @@ import { Wallet } from "@/types/wallet";
 export type WalletContextType = {
   wallet: Wallet | null;
   setWallet: (wallet: Wallet) => void;
+  passWord: string;
+  setPassWord: (password: string) => void;
 };
 
 export const WalletContext = createContext<WalletContextType>({
   wallet: null,
+  passWord: "",
   setWallet: () => null,
+  setPassWord: () => "",
 });
 
 export function useWallet() {

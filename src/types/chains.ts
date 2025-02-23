@@ -1,7 +1,7 @@
 export enum ChainType {
-  SOLANA = "solana",
-  ETHEREUM = "ethereum",
-  BITCOIN = "bitcoin",
+  SOLANA = "SOLANA",
+  ETHEREUM = "ETHEREUM",
+  BITCOIN = "BITCOIN",
 }
 
 export interface WalletKey {

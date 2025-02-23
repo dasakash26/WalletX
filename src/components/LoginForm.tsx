@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { getWallet } from "@/utils/storage";
 import { createKeypairFromPrivateKey } from "@/utils/keypair";
-import { SolanaWallet, OtherWallet } from "@/types/wallet";
 import {
   Card,
   CardContent,
@@ -39,7 +38,7 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { setWallet } = useWallet();
+  const { setPassWord, setWallet } = useWallet();
 
   const handleLogin = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -55,51 +54,41 @@ export default function LoginForm() {
       const walletData = await getWallet(password, selectedChain);
 
       if (!walletData || !walletData.privateKey || !walletData.publicKey) {
-        setError("Invalid wallet data. Please try again!");
-        return;
+        throw new Error("Invalid wallet data");
       }
 
+      password && setPassWord(password);
+
       if (selectedChain === "SOLANA") {
-        try {
-          if (
-            !walletData.privateKey ||
-            typeof walletData.privateKey !== "string"
-          ) {
-            throw new Error("Invalid private key format");
-          }
-
-          const keypair = createKeypairFromPrivateKey(walletData.privateKey);
-          if (!keypair) {
-            throw new Error("Failed to create keypair");
-          }
-
-          setWallet({
-            chain: selectedChain,
-            keypair,
-            publicKey: walletData.publicKey,
-            privateKey: walletData.privateKey,
-          });
-
-          navigate("/");
-        } catch (keypairError) {
-          console.error("Keypair creation error:", keypairError);
-          setError(
-            "Invalid wallet format. Please ensure you're using the correct password."
-          );
-          return;
+        if (
+          !walletData.privateKey ||
+          typeof walletData.privateKey !== "string"
+        ) {
+          throw new Error("Invalid private key format");
         }
-      } else {
-        const processedWallet: OtherWallet = {
-          ...walletData,
+
+        const keypair = createKeypairFromPrivateKey(walletData.privateKey);
+        if (!keypair) {
+          throw new Error("Failed to create keypair");
+        }
+
+        setWallet({
           chain: selectedChain,
-        };
-        localStorage.setItem("wallet", JSON.stringify(walletData));
-        setWallet(processedWallet);
+          publicKey: walletData.publicKey,
+          privateKey: walletData.privateKey,
+        });
+
+        // Add a small delay before navigation
+        await new Promise((resolve) => setTimeout(resolve, 100));
         navigate("/");
       }
     } catch (err) {
       console.error("Login error:", err);
-      setError("Failed to unlock wallet. Please try again.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to unlock wallet. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
