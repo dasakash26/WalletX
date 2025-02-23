@@ -7,6 +7,7 @@ import { WalletProvider } from "@/context/WalletProvider";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import WalletSetupPage from "./pages/WalletSetUpPage";
 import WalletFromMnemonic from "./pages/WalletFromMnemonic";
+import { DashBoard } from "./pages/DashBoard";
 // import HomePage from "./pages/HomePage";
 // import ImportWalletPage from "./pages/ImportWalletPage";
 // import SendPage from "./pages/SendPage";
@@ -28,8 +29,7 @@ function App() {
             path="/"
             element={
               <ProtectedRoute>
-                <div>Home</div>
-                {/* <HomePage /> */}
+                <DashBoard />
               </ProtectedRoute>
             }
           />

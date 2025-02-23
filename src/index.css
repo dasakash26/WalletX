@@ -104,6 +104,7 @@
     @apply bg-background text-foreground;
   }
 }
+
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -155,4 +156,14 @@
 
 .animate-shake {
   animation: shake 0.4s ease-in-out;
+}
+
+.bg-grid {
+  background-image: linear-gradient(
+      to right,
+      rgb(55 65 81 / 0.1) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to bottom, rgb(55 65 81 / 0.1) 1px, transparent 1px);
+  background-size: 40px 40px;
 }

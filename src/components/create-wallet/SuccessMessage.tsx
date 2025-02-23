@@ -31,7 +31,7 @@ export function SuccessMessage() {
       <Button
         size="lg"
         className="text-lg font-medium px-8 py-6 h-auto rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500"
-        onClick={() => navigate("/wallet")}
+        onClick={() => navigate("/")}
       >
         Go to Wallet
         <ArrowRight className="h-5 w-5 ml-2" />

@@ -13,8 +13,7 @@ export default function AuthPage() {
       const storedWallet = await walletDB.wallets.toCollection().first();
 
       if (!storedWallet) {
-        // Uncomment Later
-        //navigate("/create-wallet");
+        navigate("/create-wallet");
       } else if (wallet) {
         navigate("/");
       }

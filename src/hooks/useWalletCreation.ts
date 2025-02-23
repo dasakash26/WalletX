@@ -1,13 +1,9 @@
-import { Buffer } from "buffer";
 import { useState, useEffect } from "react";
-import { deriveSolanaKey } from "@/utils/createAccount";
+import { deriveWalletKey } from "@/utils/createAccount";
 import type { StepStatus, WalletStep } from "@/types";
 import { ChainType } from "@/types/chains";
 import { saveWallet } from "@/utils/storage";
 import { generateMnemonic } from "bip39";
-
-// Add this line to make Buffer available globally
-window.Buffer = Buffer;
 
 export const WALLET_STEPS = {
   GENERATE: {
@@ -54,7 +50,7 @@ export function useWalletCreation() {
     setIsLoading(true);
     setError(null);
     try {
-      // Using generateMnemonic with the global Buffer now available
+      // Using generateMnemoSnic with the global Buffer now available
       const phrase = generateMnemonic();
       setMnemonic(phrase);
     } catch (err) {
@@ -90,7 +86,7 @@ export function useWalletCreation() {
     setError(null);
     setIsLoading(true);
     try {
-      await create3Wallet(mnemonic, password);
+      await create3Wallets(mnemonic, password);
       updateStepStatus(2, "complete");
       updateStepStatus(3, "current");
       setCurrentStep(3);
@@ -130,13 +126,14 @@ export function useWalletCreation() {
   };
 }
 
-async function create3Wallet(mnemonic: string, password: string) {
-  //create solana wallet
-  console.log("createWallet");
-  //const solanaKey = deriveWalletKey(ChainType.SOLANA, mnemonic);
-  const solanaKey = deriveSolanaKey(mnemonic);
-  console.log(solanaKey);
-  //save
+async function create3Wallets(mnemonic: string, password: string) {
+  const solanaKey = deriveWalletKey(ChainType.SOLANA, mnemonic);
+  if (!solanaKey) {
+    throw new Error("Failed to derive wallet key");
+  }
+
+  console.log("solanaKey:", solanaKey);
+
   const resSol = await saveWallet(
     solanaKey.privateKey,
     password,

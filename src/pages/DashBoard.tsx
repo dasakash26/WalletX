@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Logo } from "@/components/layout/Logo";
-import { useWallet } from "@/context/WalletProvider";
+import { useWallet } from "@/context/wallet.context";
+
 // import {
 //   getSolanaBalance,
 //   getEthereumBalance,
@@ -26,7 +27,7 @@ type Transaction = {
   timestamp: Date;
 };
 
-export function HomePage() {
+export function DashBoard() {
   const { wallet } = useWallet();
   const [selectedChain, setSelectedChain] = useState(wallet?.chain || "SOLANA");
   const [balance, setBalance] = useState(0);

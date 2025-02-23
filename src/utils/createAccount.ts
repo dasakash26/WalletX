@@ -1,8 +1,8 @@
 import { derivePath } from "ed25519-hd-key";
-// import { ChainType, WalletKey } from "../types/chains";
+import { ChainType, WalletKey } from "../types/chains";
 import { mnemonicToSeedSync, validateMnemonic } from "bip39";
 import { Keypair } from "@solana/web3.js";
-// import { ethers } from "ethers";
+import { ethers } from "ethers";
 
 export function validateAndGetSeed(mnemonic: string): Uint8Array {
   if (!validateMnemonic(mnemonic)) {
@@ -32,46 +32,49 @@ export function deriveSolanaKey(mnemonic: string) {
   }
 }
 
-// function deriveEthereumKey(mnemonic: string): WalletKey {
-//   const seed = validateAndGetSeed(mnemonic);
-//   const hdNode = ethers.HDNodeWallet.fromSeed(seed);
-//   const wallet = hdNode.derivePath("m/44'/60'/0'/0/0");
+function deriveEthereumKey(mnemonic: string): WalletKey {
+  const seed = validateAndGetSeed(mnemonic);
+  const hdNode = ethers.HDNodeWallet.fromSeed(seed);
+  const wallet = hdNode.derivePath("m/44'/60'/0'/0/0");
 
-//   return {
-//     address: wallet.address,
-//     privateKey: wallet.privateKey,
-//   };
-// }
+  return {
+    address: wallet.address,
+    privateKey: wallet.privateKey,
+  };
+}
 
-// function deriveBitcoinKey(mnemonic: string): WalletKey {
-//   // const seed = validateAndGetSeed(mnemonic);
-//   // const network = bitcoin.networks.bitcoin;
-//   // const root = getMasterKeyFromSeed(Buffer.from(seed));
-//   // const child = root.derivePath("m/44'/0'/0'/0/0");
-//   // const { address } = bitcoin.payments.p2pkh({
-//   //   pubkey: Buffer.from(child.publicKey),
-//   //   network,
-//   // });
-//   const address = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa";
-//   const child = "L3AT9";
-//   return {
-//     address: address!,
-//     privateKey: child,
-//   };
-// }
+function deriveBitcoinKey(mnemonic: string): WalletKey {
+  // const seed = validateAndGetSeed(mnemonic);
+  // const network = bitcoin.networks.bitcoin;
+  // const root = getMasterKeyFromSeed(Buffer.from(seed));
+  // const child = root.derivePath("m/44'/0'/0'/0/0");
+  // const { address } = bitcoin.payments.p2pkh({
+  //   pubkey: Buffer.from(child.publicKey),
+  //   network,
+  // });
 
-// export function deriveWalletKey(
-//   chain: ChainType,
-//   mnemonic: string
-// ): WalletKey | undefined {
-//   switch (chain) {
-//     case ChainType.SOLANA:
-//       return deriveSolanaKey(mnemonic);
-//     case ChainType.ETHEREUM:
-//       return deriveEthereumKey(mnemonic);
-//     case ChainType.BITCOIN:
-//       return deriveBitcoinKey(mnemonic);
-//     default:
-//       throw new Error(`Unsupported chain: ${chain}`);
-//   }
-// }
+  console.log(mnemonic);
+  const address = "bitcoin address";
+  const child = "bitcoin private key";
+
+  return {
+    address: address!,
+    privateKey: child,
+  };
+}
+
+export function deriveWalletKey(
+  chain: ChainType,
+  mnemonic: string
+): WalletKey | undefined {
+  switch (chain) {
+    case ChainType.SOLANA:
+      return deriveSolanaKey(mnemonic);
+    case ChainType.ETHEREUM:
+      return deriveEthereumKey(mnemonic);
+    case ChainType.BITCOIN:
+      return deriveBitcoinKey(mnemonic);
+    default:
+      throw new Error(`Unsupported chain: ${chain}`);
+  }
+}

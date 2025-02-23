@@ -4,8 +4,9 @@ import { WalletActionButtons } from "@/components/wallet-setup/WalletActionButto
 
 export default function WalletSetupPage() {
   return (
-    <div className="min-h-[100vh] w-full flex items-center justify-center p-6">
-      <Card className="w-[90%] max-w-[440px] shadow-lg mx-auto">
+    <div className="flex items-center justify-center p-6 ">
+      <div className="absolute inset-0 bg-foreground/[0.02] -z-[1]" />
+      <Card className="w-[90%] max-w-[440px] mx-auto bg-background/10 backdrop-blur-xl border-primary/20 shadow-2xl">
         <CardHeader className="pb-6">
           <WalletSetupHeader />
         </CardHeader>

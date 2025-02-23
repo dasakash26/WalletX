@@ -53,29 +53,52 @@ export default function LoginForm() {
 
     try {
       const walletData = await getWallet(password, selectedChain);
-      if (walletData) {
-        if (selectedChain === "SOLANA") {
+
+      if (!walletData || !walletData.privateKey || !walletData.publicKey) {
+        setError("Invalid wallet data. Please try again!");
+        return;
+      }
+
+      if (selectedChain === "SOLANA") {
+        try {
+          if (
+            !walletData.privateKey ||
+            typeof walletData.privateKey !== "string"
+          ) {
+            throw new Error("Invalid private key format");
+          }
+
           const keypair = createKeypairFromPrivateKey(walletData.privateKey);
-          const processedWallet: SolanaWallet = {
-            ...walletData,
-            chain: "SOLANA",
-            keypair,
-          };
-          localStorage.setItem("wallet", JSON.stringify(walletData));
-          setWallet(processedWallet);
-        } else {
-          const processedWallet: OtherWallet = {
-            ...walletData,
+          if (!keypair) {
+            throw new Error("Failed to create keypair");
+          }
+
+          setWallet({
             chain: selectedChain,
-          };
-          localStorage.setItem("wallet", JSON.stringify(walletData));
-          setWallet(processedWallet);
+            keypair,
+            publicKey: walletData.publicKey,
+            privateKey: walletData.privateKey,
+          });
+
+          navigate("/");
+        } catch (keypairError) {
+          console.error("Keypair creation error:", keypairError);
+          setError(
+            "Invalid wallet format. Please ensure you're using the correct password."
+          );
+          return;
         }
-        navigate("/");
       } else {
-        setError("Invalid password. Please try again!");
+        const processedWallet: OtherWallet = {
+          ...walletData,
+          chain: selectedChain,
+        };
+        localStorage.setItem("wallet", JSON.stringify(walletData));
+        setWallet(processedWallet);
+        navigate("/");
       }
     } catch (err) {
+      console.error("Login error:", err);
       setError("Failed to unlock wallet. Please try again.");
     } finally {
       setIsLoading(false);
