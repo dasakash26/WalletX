@@ -67,14 +67,20 @@ export function deriveWalletKey(
   chain: ChainType,
   mnemonic: string
 ): WalletKey | undefined {
-  switch (chain) {
-    case ChainType.SOLANA:
-      return deriveSolanaKey(mnemonic);
-    case ChainType.ETHEREUM:
-      return deriveEthereumKey(mnemonic);
-    case ChainType.BITCOIN:
-      return deriveBitcoinKey(mnemonic);
-    default:
-      throw new Error(`Unsupported chain: ${chain}`);
+  chain = chain.toLocaleUpperCase() as ChainType;
+  try {
+    switch (chain) {
+      case ChainType.SOLANA:
+        return deriveSolanaKey(mnemonic);
+      case ChainType.ETHEREUM:
+        return deriveEthereumKey(mnemonic);
+      case ChainType.BITCOIN:
+        return deriveBitcoinKey(mnemonic);
+      default:
+        throw new Error(`Unsupported chain: ${chain}`);
+    }
+  } catch (error) {
+    console.error(`Error deriving key for ${chain}:`, error);
+    throw error;
   }
 }

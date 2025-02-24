@@ -6,6 +6,7 @@ import { PasswordSetup } from "@/components/create-wallet/PasswordSetup";
 import { SuccessMessage } from "@/components/create-wallet/SuccessMessage";
 import { SecretPhrase } from "@/components/SecretPhrase";
 import { useWalletCreation } from "@/hooks/useWalletCreation";
+import { ChainSelect } from "@/components/create-wallet/ChainSelect";
 
 export function CreateWalletPage() {
   const {
@@ -14,9 +15,11 @@ export function CreateWalletPage() {
     error,
     currentStep,
     steps,
+    selectedChain,
     generateNewWallet,
     handleConfirm,
     handlePasswordConfirmed,
+    handleChainSelect,
     getStepHeading,
   } = useWalletCreation();
 
@@ -24,12 +27,19 @@ export function CreateWalletPage() {
     switch (currentStep) {
       case 2:
         return (
+          <ChainSelect
+            selectedChain={selectedChain}
+            onSelect={handleChainSelect}
+          />
+        );
+      case 3:
+        return (
           <PasswordSetup
             onConfirm={handlePasswordConfirmed}
             mnemonic={mnemonic}
           />
         );
-      case 3:
+      case 4:
         return <SuccessMessage />;
       default:
         return <SecretPhrase phrase={mnemonic} onConfirm={handleConfirm} />;

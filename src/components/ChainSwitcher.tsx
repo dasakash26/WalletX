@@ -8,14 +8,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
-import { getWallet } from "@/utils/storage";
+import { getWallets } from "@/utils/storage";
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
 
 function ChainSwitcher() {
-  const { wallet, setWallet, passWord } = useWallet();
+  const { wallets, setWallets, passWord } = useWallet();
   const [selectedChain, setSelectedChain] = useState<string | undefined>(
-    wallet?.chain
+    wallets?.[0]?.chain
   );
   const [isLoading, setIsLoading] = useState(false);
 
@@ -29,19 +29,23 @@ function ChainSwitcher() {
       setIsLoading(true);
 
       try {
-        const wallet = await getWallet(passWord, selectedChain as ChainType);
-        if (!wallet) throw new Error("Wallet not found");
+        const newWallets = await getWallets(
+          passWord,
+          selectedChain as ChainType
+        );
+        if (!newWallets.length) throw new Error("No wallets found");
 
-        const finalWallet = {
-          ...wallet,
+        const walletsList = newWallets.map((wallet) => ({
+          privateKey: wallet.privateKey,
+          publicKey: wallet.publicKey,
           chain: selectedChain as ChainType,
-        };
+        }));
 
-        setWallet(finalWallet);
+        setWallets(walletsList);
         toast.success(`Switched to ${selectedChain.toLowerCase()} network`);
       } catch (error: any) {
         toast.error(`Failed to switch network: ${error.message}`);
-        setSelectedChain(wallet?.chain);
+        setSelectedChain(wallets?.[0]?.chain);
       } finally {
         setIsLoading(false);
       }
@@ -71,7 +75,7 @@ function ChainSwitcher() {
               key={chain}
               value={chain}
               className={`capitalize ${
-                wallet?.chain === chain ? "bg-secondary/50" : ""
+                wallets?.[0]?.chain === chain ? "bg-secondary/50" : ""
               }`}
             >
               {chain.toLowerCase()}

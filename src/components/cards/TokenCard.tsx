@@ -18,7 +18,7 @@ export function TokenCard({
   icon,
 }: TokenCardProps) {
   return (
-    <Card className="p-4 hover:bg-primary/20 transition-colors cursor-pointer backdrop-blur-md bg-primary/10 border-primary/20">
+    <Card className="p-4 backdrop-blur-md bg-gradient-to-b from-background/95 to-background/90 border-border hover:bg-background hover:border-primary/20 transition-all duration-200">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="text-2xl">{icon}</div>

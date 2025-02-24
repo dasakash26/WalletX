@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { getWallet } from "@/utils/storage";
-import { createKeypairFromPrivateKey } from "@/utils/keypair";
+import { getWallets } from "@/utils/storage";
+import { getCachedPassword, setCachedPassword } from "@/utils/passwordCache";
 import {
   Card,
   CardContent,
@@ -38,11 +38,21 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { setPassWord, setWallet } = useWallet();
+  const { setPassWord, setWallets } = useWallet();
 
-  const handleLogin = async (e?: React.FormEvent) => {
+  useEffect(() => {
+    const cachedPassword = getCachedPassword();
+    if (cachedPassword) {
+      setPassword(cachedPassword);
+      handleLogin(undefined, cachedPassword);
+    }
+  }, []);
+
+  const handleLogin = async (e?: React.FormEvent, cachedPass?: string) => {
     e?.preventDefault();
-    if (!password) {
+    const passwordToUse = cachedPass || password;
+
+    if (!passwordToUse) {
       setError("Password is required");
       return;
     }
@@ -51,37 +61,20 @@ export default function LoginForm() {
     setError("");
 
     try {
-      const walletData = await getWallet(password, selectedChain);
+      const wallets = await getWallets(passwordToUse, selectedChain);
+      console.log("Wallets:", wallets);
 
-      if (!walletData || !walletData.privateKey || !walletData.publicKey) {
-        throw new Error("Invalid wallet data");
+      if (!wallets.length) {
+        throw new Error("No wallets found");
       }
 
-      password && setPassWord(password);
+      setCachedPassword(passwordToUse);
+      passwordToUse && setPassWord(passwordToUse);
 
-      if (selectedChain === "SOLANA") {
-        if (
-          !walletData.privateKey ||
-          typeof walletData.privateKey !== "string"
-        ) {
-          throw new Error("Invalid private key format");
-        }
+      setWallets(wallets);
 
-        const keypair = createKeypairFromPrivateKey(walletData.privateKey);
-        if (!keypair) {
-          throw new Error("Failed to create keypair");
-        }
-
-        setWallet({
-          chain: selectedChain,
-          publicKey: walletData.publicKey,
-          privateKey: walletData.privateKey,
-        });
-
-        // Add a small delay before navigation
-        await new Promise((resolve) => setTimeout(resolve, 100));
-        navigate("/");
-      }
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      navigate("/");
     } catch (err) {
       console.error("Login error:", err);
       setError(

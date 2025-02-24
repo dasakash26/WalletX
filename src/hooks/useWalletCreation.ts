@@ -14,8 +14,15 @@ export const WALLET_STEPS = {
     headingDescription:
       "Secure your funds with a new wallet. Make sure to backup your recovery phrase.",
   },
-  PASSWORD: {
+  CHAIN: {
     number: 2,
+    title: "Select Chain",
+    description: "Choose the chain you want to use",
+    heading: "Select Chain",
+    headingDescription: "Choose the chain you want to use",
+  },
+  PASSWORD: {
+    number: 3,
     title: "Set Password",
     description: "Create a strong password to secure your wallet",
     heading: "Set Password",
@@ -23,7 +30,7 @@ export const WALLET_STEPS = {
       "Create a strong password to protect your wallet and verify secret phrase.",
   },
   COMPLETE: {
-    number: 3,
+    number: 4,
     title: "Wallet Created",
     description: "Your wallet is ready to use",
     heading: "Wallet Created Successfully",
@@ -45,6 +52,7 @@ export function useWalletCreation() {
   const [error, setError] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [steps, setSteps] = useState<WalletStep[]>(INITIAL_STEPS);
+  const [selectedChain, setSelectedChain] = useState<ChainType | null>(null);
 
   const generateNewWallet = async () => {
     setIsLoading(true);
@@ -82,14 +90,21 @@ export function useWalletCreation() {
     return Promise.resolve();
   };
 
+  const handleChainSelect = (chain: ChainType) => {
+    setSelectedChain(chain);
+    updateStepStatus(2, "complete");
+    updateStepStatus(3, "current");
+    setCurrentStep(3);
+  };
+
   const handlePasswordConfirmed = async (password: string): Promise<void> => {
     setError(null);
     setIsLoading(true);
     try {
-      await create3Wallets(mnemonic, password);
-      updateStepStatus(2, "complete");
-      updateStepStatus(3, "current");
-      setCurrentStep(3);
+      await createWallet(selectedChain as ChainType, mnemonic, password);
+      updateStepStatus(3, "complete");
+      updateStepStatus(4, "current");
+      setCurrentStep(4);
       console.log("Wallet created with password");
     } catch (err) {
       const errorMessage =
@@ -123,48 +138,32 @@ export function useWalletCreation() {
     handleConfirm,
     handlePasswordConfirmed,
     getStepHeading,
+    selectedChain,
+    handleChainSelect,
   };
 }
 
-async function create3Wallets(mnemonic: string, password: string) {
-  const solanaKey = deriveWalletKey(ChainType.SOLANA, mnemonic);
-  if (!solanaKey) {
-    throw new Error("Failed to derive wallet key");
+async function createWallet(
+  chain: ChainType,
+  mnemonic: string,
+  password: string
+) {
+  const walletKey = deriveWalletKey(chain, mnemonic);
+  if (!walletKey) {
+    throw new Error(`Failed to derive wallet key for chain: ${chain}`);
   }
 
-  console.log("solanaKey:", solanaKey);
+  console.log(`Creating wallet for chain: ${chain}`, walletKey);
+  chain = chain.toLocaleUpperCase() as ChainType;
 
-  const resSol = await saveWallet(
-    solanaKey.privateKey,
+  const saveResult = await saveWallet(
+    walletKey.privateKey,
     password,
-    solanaKey.address,
-    ChainType.SOLANA
+    walletKey.address,
+    chain
   );
-  if (!resSol) {
-    throw new Error("Failed to save wallet");
-  }
-  //   //create Eth wallet
-  //   const ethKey = deriveWalletKey(ChainType.SOLANA, mnemonic);
-  //   //save
-  //   const resEth = await saveWallet(
-  //     ethKey.privateKey,
-  //     password,
-  //     ethKey.address,
-  //     ChainType.ETHEREUM
-  //   );
-  //   if (!resEth) {
-  //     throw new Error("Failed to save wallet");
-  //   }
 
-  //   //create btc wallet
-  //   const btcKey = deriveWalletKey(ChainType.BITCOIN, mnemonic);
-  //   const resBtc = await saveWallet(
-  //     btcKey.privateKey,
-  //     password,
-  //     btcKey.address,
-  //     ChainType.BITCOIN
-  //   );
-  //   if (!resBtc) {
-  //     throw new Error("Failed to save wallet");
-  //   }
+  if (!saveResult) {
+    throw new Error(`Failed to save wallet for chain: ${chain}`);
+  }
 }

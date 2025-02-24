@@ -2,16 +2,16 @@ import { createContext, useContext } from "react";
 import { Wallet } from "@/types/wallet";
 
 export type WalletContextType = {
-  wallet: Wallet | null;
-  setWallet: (wallet: Wallet) => void;
+  wallets: Wallet[] | null;
+  setWallets: (wallets: Wallet[]) => void;
   passWord: string;
   setPassWord: (password: string) => void;
 };
 
 export const WalletContext = createContext<WalletContextType>({
-  wallet: null,
+  wallets: null,
   passWord: "",
-  setWallet: () => null,
+  setWallets: () => null,
   setPassWord: () => "",
 });
 

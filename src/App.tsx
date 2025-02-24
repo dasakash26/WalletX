@@ -8,6 +8,8 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import WalletSetupPage from "./pages/WalletSetUpPage";
 import WalletFromMnemonic from "./pages/WalletFromMnemonic";
 import { DashBoard } from "./pages/DashBoard";
+import Test from "./pages/test";
+import ImportWalletPage from "./pages/ImportWalletPage";
 // import HomePage from "./pages/HomePage";
 // import ImportWalletPage from "./pages/ImportWalletPage";
 // import SendPage from "./pages/SendPage";
@@ -19,12 +21,13 @@ function App() {
   return (
     <WalletProvider>
       <Routes>
+        <Route path="/test" element={<Test />} />
         <Route element={<Layout />}>
           <Route path="/wallet-setup" element={<WalletSetupPage />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/create-wallet" element={<CreateWalletPage />} />
           <Route path="/wfm" element={<WalletFromMnemonic />} />
-          {/* <Route path="/import-wallet" element={<ImportWalletPage />} /> */}
+          <Route path="/import-wallet" element={<ImportWalletPage />} />
           <Route
             path="/"
             element={

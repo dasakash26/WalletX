@@ -3,6 +3,7 @@ import { Connection, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import { useWallet } from "@/context/wallet.context";
 import { BalanceCard } from "@/components/cards/BalanceCard";
 import { TokenCard } from "@/components/cards/TokenCard";
+import { WalletSwitcher } from "@/components/WalletSwitcher";
 
 type Token = {
   symbol: string;
@@ -14,21 +15,29 @@ type Token = {
 };
 
 export function DashBoard() {
-  const { wallet } = useWallet();
+  const { wallets } = useWallet();
+  const [error, setError] = useState<string | null>(null);
+  if (!wallets) {
+    setError("No wallets found");
+    return <>Error</>;
+  }
+  const [activeWallet, setActiveWallet] = useState(wallets[0]);
   const [isLoading, setIsLoading] = useState(false);
   const [balance, setBalance] = useState<number>(0);
-  const [percentageChange, setPercentageChange] = useState<number>(0);
+  const percentageChange = 15;
+  //const [percentageChange, setPercentageChange] = useState<number>(0);
   const [tokens, setTokens] = useState<Token[]>([]);
 
   const connection = new Connection("https://api.devnet.solana.com");
 
   const fetchBalances = async () => {
-    if (!wallet?.publicKey) return;
+    if (!activeWallet?.publicKey) return;
 
     setIsLoading(true);
+    setError(null);
     try {
       const solBalance = await connection.getBalance(
-        new PublicKey(wallet.publicKey)
+        new PublicKey(activeWallet.publicKey)
       );
       const solInUSD = (solBalance / LAMPORTS_PER_SOL) * 100;
 
@@ -45,16 +54,17 @@ export function DashBoard() {
       ]);
     } catch (error) {
       console.error("Error fetching balance:", error);
+      setError("Failed to fetch wallet balance");
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    if (wallet?.publicKey) {
+    if (activeWallet?.publicKey) {
       fetchBalances();
     }
-  }, [wallet?.publicKey]);
+  }, [activeWallet?.publicKey]);
 
   const refreshBalance = () => {
     fetchBalances();
@@ -62,10 +72,19 @@ export function DashBoard() {
 
   return (
     <div className="flex flex-col flex-1">
+      {error && (
+        <div className="bg-red-500 text-white p-4 text-center">{error}</div>
+      )}
       <main className="flex-1 container max-w-2xl mx-auto p-4 space-y-6">
+        <div className="flex justify-center">
+          <WalletSwitcher
+            activeWallet={activeWallet}
+            setActiveWallet={setActiveWallet}
+          />
+        </div>
         <BalanceCard
           balance={balance}
-          publicKey={wallet?.publicKey?.toString()}
+          publicKey={activeWallet?.publicKey?.toString()}
           percentageChange={percentageChange}
           isLoading={isLoading}
           onRefresh={refreshBalance}
