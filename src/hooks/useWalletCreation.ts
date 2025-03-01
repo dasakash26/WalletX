@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { deriveWalletKey } from "@/utils/createAccount";
+import { createWalletFromMnemonic } from "@/utils/createAccount";
 import type { StepStatus, WalletStep } from "@/types";
 import { ChainType } from "@/types/chains";
-import { saveWallet } from "@/utils/storage";
 import { generateMnemonic } from "bip39";
 
 export const WALLET_STEPS = {
@@ -101,7 +100,11 @@ export function useWalletCreation() {
     setError(null);
     setIsLoading(true);
     try {
-      await createWallet(selectedChain as ChainType, mnemonic, password);
+      await createWalletFromMnemonic(
+        selectedChain as ChainType,
+        mnemonic,
+        password
+      );
       updateStepStatus(3, "complete");
       updateStepStatus(4, "current");
       setCurrentStep(4);
@@ -141,29 +144,4 @@ export function useWalletCreation() {
     selectedChain,
     handleChainSelect,
   };
-}
-
-async function createWallet(
-  chain: ChainType,
-  mnemonic: string,
-  password: string
-) {
-  const walletKey = deriveWalletKey(chain, mnemonic);
-  if (!walletKey) {
-    throw new Error(`Failed to derive wallet key for chain: ${chain}`);
-  }
-
-  console.log(`Creating wallet for chain: ${chain}`, walletKey);
-  chain = chain.toLocaleUpperCase() as ChainType;
-
-  const saveResult = await saveWallet(
-    walletKey.privateKey,
-    password,
-    walletKey.address,
-    chain
-  );
-
-  if (!saveResult) {
-    throw new Error(`Failed to save wallet for chain: ${chain}`);
-  }
 }

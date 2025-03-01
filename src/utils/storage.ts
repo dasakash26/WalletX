@@ -58,6 +58,17 @@ export async function saveWallet(
       throw new Error("Required parameters missing");
     }
 
+    // Check for existing wallet with same public key
+    const existingWallet = await walletDB.wallets
+      .where("chain")
+      .equals(chain)
+      .and((wallet) => wallet.publicKey === publicKey)
+      .first();
+
+    if (existingWallet) {
+      throw new Error("A wallet with this public key already exists");
+    }
+
     const walletName = name || (await getNextDefaultName(chain));
     console.log("Saving wallet:", walletName, "for chain:", chain);
 
@@ -146,8 +157,23 @@ export async function getWallets(
           wallet !== null
       );
 
-    console.log(`Successfully decrypted ${decryptedWallets.length} wallets`);
-    return decryptedWallets;
+    const uniqueWallets = decryptedWallets.filter(
+      (wallet, index, self) =>
+        index === self.findIndex((w) => w.publicKey === wallet.publicKey)
+    );
+
+    if (uniqueWallets.length < decryptedWallets.length) {
+      console.warn(
+        `Found and removed ${
+          decryptedWallets.length - uniqueWallets.length
+        } duplicate wallet(s)`
+      );
+    }
+
+    console.log(
+      `Successfully decrypted ${uniqueWallets.length} unique wallets`
+    );
+    return uniqueWallets;
   } catch (error) {
     console.error("Failed to fetch wallets:", error);
     return [];

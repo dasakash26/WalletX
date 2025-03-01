@@ -11,6 +11,6 @@ export interface WalletContextType {
 export type WalletImportType = "phrase" | "privateKey";
 
 export interface ImportedWallet {
-  publicKey: string;
-  secretKey: Uint8Array;
+  address: string;
+  privateKey: string;
 }

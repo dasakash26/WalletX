@@ -3,6 +3,8 @@ import { ChainType, WalletKey } from "../types/chains";
 import { mnemonicToSeedSync, validateMnemonic } from "bip39";
 import { Keypair } from "@solana/web3.js";
 import { ethers } from "ethers";
+import { saveWallet } from "./storage";
+import bs58 from "bs58";
 
 export function validateAndGetSeed(mnemonic: string): Uint8Array {
   if (!validateMnemonic(mnemonic)) {
@@ -82,5 +84,67 @@ export function deriveWalletKey(
   } catch (error) {
     console.error(`Error deriving key for ${chain}:`, error);
     throw error;
+  }
+}
+
+export async function createWalletFromMnemonic(
+  chain: ChainType,
+  mnemonic: string,
+  password: string
+) {
+  const walletKey = deriveWalletKey(chain, mnemonic);
+  if (!walletKey) {
+    throw new Error(`Failed to derive wallet key for chain: ${chain}`);
+  }
+
+  console.log(`Creating wallet for chain: ${chain}`, walletKey);
+  chain = chain.toLocaleUpperCase() as ChainType;
+
+  const saveResult = await saveWallet(
+    walletKey.privateKey,
+    password,
+    walletKey.address,
+    chain
+  );
+
+  if (!saveResult) {
+    throw new Error(`Failed to save wallet for chain: ${chain}`);
+  }
+}
+
+export function importFromPrivateKey(
+  chain: ChainType,
+  privateKey: string,
+  password: string
+): Promise<number> {
+  try {
+    const decodedPrivateKey = new Uint8Array(bs58.decode(privateKey));
+    let walletKey: WalletKey;
+
+    if (chain === ChainType.SOLANA) {
+      console.log("Importing Solana key from: ", decodedPrivateKey);
+      const keypair = Keypair.fromSecretKey(decodedPrivateKey);
+      console.log("Imported Solana keypair: ", keypair);
+      walletKey = {
+        address: keypair.publicKey.toString(),
+        privateKey: privateKey,
+      };
+    } else if (chain === ChainType.ETHEREUM) {
+      const wallet = new ethers.Wallet(privateKey);
+      walletKey = {
+        address: wallet.address,
+        privateKey: wallet.privateKey,
+      };
+    } else {
+      throw new Error("Unsupported chain");
+    }
+
+    return saveWallet(walletKey.privateKey, password, walletKey.address, chain);
+  } catch (err) {
+    console.error("Error importing from private key:", err);
+    if (err instanceof Error && err.message.includes("base58")) {
+      throw new Error("Invalid base58 private key format");
+    }
+    throw new Error("Invalid private key");
   }
 }
