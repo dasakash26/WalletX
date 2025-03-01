@@ -11,7 +11,7 @@ import {
 interface BalanceCardProps {
   balance: number;
   publicKey?: string;
-  percentageChange: number;
+  percentageChange: number | null;
   isLoading: boolean;
   onRefresh: () => void;
 }
@@ -53,14 +53,16 @@ export function BalanceCard({
             {publicKey}
           </div>
         )}
-        <div
-          className={`text-sm ${
-            percentageChange < 0 ? "text-red-500" : "text-emerald-500"
-          }`}
-        >
-          {percentageChange > 0 ? "+" : ""}
-          {percentageChange}%
-        </div>
+        {percentageChange !== null && (
+          <div
+            className={`text-sm ${
+              percentageChange < 0 ? "text-red-500" : "text-emerald-500"
+            }`}
+          >
+            {percentageChange > 0 ? "+" : ""}
+            {percentageChange}%
+          </div>
+        )}
 
         <div className="flex justify-center gap-4 mt-6">
           <TooltipProvider>
