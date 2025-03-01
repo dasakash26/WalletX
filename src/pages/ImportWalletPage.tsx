@@ -65,11 +65,11 @@ const ImportWalletPage = () => {
         password,
       });
       if (wallet) setIsSuccess(true);
-    } finally {
-      setIsLoading(false);
       setTimeout(() => {
         navigate("/");
       }, 2000);
+    } finally {
+      setIsLoading(false);
     }
   };
 

@@ -14,9 +14,14 @@ export function Logo({
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <Wallet className={iconClassName} />
-      <span className={textClassName}>
-        Wallet<span className="text-blue-500">X</span>
-      </span>
+      <div className="flex items-center">
+        <span className={textClassName}>
+          Wallet<span className="text-blue-500">X</span>
+        </span>
+        <span className="ml-1 animate-pulse text-xs font-medium text-blue-500">
+          Beta
+        </span>
+      </div>
     </div>
   );
 }
