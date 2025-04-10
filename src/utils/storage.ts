@@ -15,8 +15,8 @@ class WalletDatabase extends Dexie {
 
   constructor() {
     super("MultiChainWalletDB");
-    this.version(2).stores({
-      wallets: "@id, name, chain, publicKey, encryptedPrivateKey",
+    this.version(3).stores({
+      wallets: "++id, name, chain, publicKey, encryptedPrivateKey",
     });
 
     this.wallets = this.table("wallets");
@@ -58,7 +58,6 @@ export async function saveWallet(
       throw new Error("Required parameters missing");
     }
 
-    // Check for existing wallet with same public key
     const existingWallet = await walletDB.wallets
       .where("chain")
       .equals(chain)

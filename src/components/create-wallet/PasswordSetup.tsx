@@ -9,14 +9,6 @@ import { VerificationStep } from "./VerificationStep";
 import { PasswordStep } from "./PasswordStep";
 import { ExistingWalletAlert } from "./ExistingWalletAlert";
 
-interface ExistingWalletAlertProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  title: string;
-  description: string;
-  onConfirm: () => void;
-}
-
 export function PasswordSetup({ onConfirm, mnemonic }: PasswordSetupProps) {
   const [formState, setFormState] = useState<FormState>({
     firstWord: "",

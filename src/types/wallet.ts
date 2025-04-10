@@ -1,6 +1,7 @@
 export interface Wallet {
   publicKey?: string;
   name?: string;
+  chain?: string;
 }
 
 export interface WalletContextType {
