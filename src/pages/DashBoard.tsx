@@ -107,7 +107,6 @@ export function DashBoard() {
 
     if (walletIndex === -1) return "receive";
 
-    // Calculate the net change for the wallet
     const preBalance = transaction.meta.preBalances[walletIndex];
     const postBalance = transaction.meta.postBalances[walletIndex];
     const netChange = postBalance - preBalance;
@@ -184,7 +183,6 @@ export function DashBoard() {
   const checkNetworkStatus = async () => {
     try {
       const start = Date.now();
-      // Use getVersion instead of getHealth as it's a lightweight RPC call
       const version = await connection.getVersion();
       const latency = Date.now() - start;
 
@@ -211,7 +209,6 @@ export function DashBoard() {
 
     initialize();
 
-    // Only need to poll for network status now
     const statusInterval = setInterval(checkNetworkStatus, 30000);
 
     return () => {
@@ -261,6 +258,7 @@ export function DashBoard() {
           percentageChange={priceChange24h || 0}
           isLoading={isLoading}
           onRefresh={refreshBalance}
+          privateKey={activeWallet?.privateKey|| ""}
         />
 
         <div className="mb-4">
@@ -302,6 +300,7 @@ export function DashBoard() {
             </div>
           </ScrollArea>
         </div>
+        
       </main>
     </div>
   );

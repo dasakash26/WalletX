@@ -171,6 +171,7 @@ export async function getWallets(
     console.log(
       `Successfully decrypted ${uniqueWallets.length} unique wallets`
     );
+
     return uniqueWallets;
   } catch (error) {
     console.error("Failed to fetch wallets:", error);

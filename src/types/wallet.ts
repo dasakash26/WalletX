@@ -1,5 +1,6 @@
 export interface Wallet {
   publicKey?: string;
+  privateKey?: string;
   name?: string;
   chain?: string;
 }
