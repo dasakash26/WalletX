@@ -119,7 +119,6 @@ export async function getWallets(
     }
 
     console.log("Wallets found, attempting decryption");
-
     const decryptedWallets = wallets
       .map((wallet) => {
         try {
