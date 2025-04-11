@@ -141,7 +141,7 @@ export function DashBoard() {
     try {
       const publicKey = new PublicKey(activeWallet.publicKey);
       const signatures = await connection.getSignaturesForAddress(publicKey, {
-        limit: 20,
+        limit: 5,
       });
 
       const transactionPromises = signatures.map(async (sig) => {
