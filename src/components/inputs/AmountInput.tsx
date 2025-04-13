@@ -7,7 +7,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useEffect, useState } from "react";
 
 const LAMPORTS_PER_SOL = 1000000000;
 
@@ -38,16 +37,6 @@ export function AmountInput({
   className,
   getEquivalentValue,
 }: AmountInputProps) {
-  // Calculate max amount based on current unit and balance
-  const getMaxAmount = () => {
-    if (currencyUnit === "lamports") {
-      return Math.floor(availableBalance * LAMPORTS_PER_SOL);
-    } else {
-      return parseFloat(availableBalance.toFixed(9));
-    }
-  };
-
-  // Calculate percentage of max amount
   const setPercentageOfMax = (percentage: number) => {
     if (currencyUnit === "lamports") {
       setAmount(
@@ -58,7 +47,6 @@ export function AmountInput({
     }
   };
 
-  // Get equivalent amount in other unit
   const getEquivalentAmounts = () => {
     if (amount <= 0) return null;
 

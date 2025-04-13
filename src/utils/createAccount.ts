@@ -4,8 +4,6 @@ import { mnemonicToSeedSync, validateMnemonic } from "bip39";
 import { Keypair } from "@solana/web3.js";
 import { ethers } from "ethers";
 import { saveWallet } from "./storage";
-import bs58 from "bs58";
-import { create } from "domain";
 import { createKeypairFromPrivateKey } from "./keypair";
 
 export function validateAndGetSeed(mnemonic: string): Uint8Array {
