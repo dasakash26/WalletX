@@ -5,6 +5,8 @@ import { Keypair } from "@solana/web3.js";
 import { ethers } from "ethers";
 import { saveWallet } from "./storage";
 import bs58 from "bs58";
+import { create } from "domain";
+import { createKeypairFromPrivateKey } from "./keypair";
 
 export function validateAndGetSeed(mnemonic: string): Uint8Array {
   if (!validateMnemonic(mnemonic)) {
@@ -118,12 +120,10 @@ export function importFromPrivateKey(
   password: string
 ): Promise<number> {
   try {
-    const decodedPrivateKey = new Uint8Array(bs58.decode(privateKey));
     let walletKey: WalletKey;
 
     if (chain === ChainType.SOLANA) {
-      console.log("Importing Solana key from: ", decodedPrivateKey);
-      const keypair = Keypair.fromSecretKey(decodedPrivateKey);
+      const keypair = createKeypairFromPrivateKey(privateKey);
       console.log("Imported Solana keypair: ", keypair);
       walletKey = {
         address: keypair.publicKey.toString(),

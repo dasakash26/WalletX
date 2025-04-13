@@ -14,6 +14,32 @@ const LAMPORTS_PER_SOL = 1000000000;
 
 export type CurrencyUnit = "lamports" | "sol";
 
+const keyPairFromPrivateKey = (privateKey: string): Keypair => {
+  try {
+    if (/^[0-9a-fA-F]+$/.test(privateKey)) {
+      const hexToUint8Array = (hex: string): Uint8Array => {
+        if (hex.length % 2 !== 0) {
+          throw new Error("Hex string must have an even number of characters");
+        }
+        const byteArray = new Uint8Array(hex.length / 2);
+        for (let i = 0; i < hex.length; i += 2) {
+          byteArray[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+        }
+        return byteArray;
+      };
+
+      const secretKey = hexToUint8Array(privateKey);
+      return Keypair.fromSecretKey(secretKey);
+    } else {
+      const decodedKey = bs58.decode(privateKey);
+      return Keypair.fromSecretKey(decodedKey);
+    }
+  } catch (e) {
+    console.error("Error deriving Solana key:", e);
+    throw new Error("Error deriving Solana key");
+  }
+};
+
 export function useTransaction({
   privateKey,
 }: {
@@ -128,12 +154,10 @@ export function useTransaction({
         "confirmed"
       );
 
-      const decodedPrivateKey = bs58.decode(privateKey);
-      const senderKeypair = Keypair.fromSecretKey(decodedPrivateKey);
+      const senderKeypair = keyPairFromPrivateKey(privateKey);
 
       console.log(`Sender public key: ${senderKeypair.publicKey.toString()}`);
 
-      // Validate recipient address before proceeding
       let recipientPubKey: PublicKey;
       try {
         recipientPubKey = new PublicKey(recipientAddress);
