@@ -106,7 +106,6 @@ export function BalanceCard({
     }
   }, [transactionStatus, onRefresh]);
 
-  // Get display amounts for confirmation dialog
   const getDisplayAmount = () => {
     if (currencyUnit === "lamports") {
       return `${amount.toLocaleString()} lamports`;
@@ -117,7 +116,6 @@ export function BalanceCard({
     }
   };
 
-  // Show equivalent values based on selected currency with better formatting
   const getEquivalentAmounts = () => {
     if (amount <= 0) return null;
 
@@ -151,7 +149,6 @@ export function BalanceCard({
         "hover:scale-105"
       )}
     >
-      {/* Refresh Button */}
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -348,12 +345,9 @@ export function BalanceCard({
                   size="sm"
                   className="rounded-md h-9"
                   onClick={() => {
-                    // Simplified calculation for 50% amount across currency types
                     if (currencyUnit === "lamports") {
-                      // Convert balance SOL to lamports then take 50%
                       setAmount(Math.floor(balance * LAMPORTS_PER_SOL * 0.5));
                     } else if (currencyUnit === "sol") {
-                      // Directly take 50% of SOL balance with proper precision
                       setAmount(parseFloat((balance * 0.5).toFixed(9)));
                     }
                   }}
@@ -366,12 +360,9 @@ export function BalanceCard({
                   size="sm"
                   className="rounded-md h-9"
                   onClick={() => {
-                    // Simplified calculation for Max amount across currency types
                     if (currencyUnit === "lamports") {
-                      // Convert balance SOL to lamports
                       setAmount(Math.floor(balance * LAMPORTS_PER_SOL));
                     } else if (currencyUnit === "sol") {
-                      // Use full SOL balance with proper precision
                       setAmount(parseFloat(balance.toFixed(9)));
                     }
                   }}

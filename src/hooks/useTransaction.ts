@@ -96,8 +96,13 @@ export function useTransaction({
 
   const validateAddress = (addr: string) => {
     if (!addr) return "Recipient address is required";
-    if (addr.length < 26) return "Invalid address format";
-    return "";
+
+    try {
+      new PublicKey(addr);
+      return "";
+    } catch (error) {
+      return "Invalid Solana address format";
+    }
   };
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,7 +132,14 @@ export function useTransaction({
       const senderKeypair = Keypair.fromSecretKey(decodedPrivateKey);
 
       console.log(`Sender public key: ${senderKeypair.publicKey.toString()}`);
-      const recipientPubKey = new PublicKey(recipientAddress);
+
+      // Validate recipient address before proceeding
+      let recipientPubKey: PublicKey;
+      try {
+        recipientPubKey = new PublicKey(recipientAddress);
+      } catch (error) {
+        throw new Error("Invalid recipient address");
+      }
 
       const transaction = new Transaction().add(
         SystemProgram.transfer({
@@ -206,7 +218,6 @@ export function useTransaction({
     }
   };
 
-  
   return {
     address,
     amount,
@@ -224,7 +235,7 @@ export function useTransaction({
     setCurrencyUnit,
     setSendDialogOpen,
     setConfirmOpen,
-    
+
     convertToLamports,
     getEquivalentValue,
     formatCurrency,
